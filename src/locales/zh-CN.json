@@ -1,0 +1,23 @@
+{
+  "box_color": "盒子颜色",
+  "cover_color": "盒盖颜色",
+  "product_name": "产品名称",
+  "Box_UDisk": "盒装U盘",
+  "Box_Wood": "盒装木块",
+  "Red": "红色",
+  "Green": "绿色",
+  "Blue": "蓝色",
+  "Magenta": "紫色",
+  "Cyan": "青色",
+  "scut": "华工校徽",
+  "operationsOperation_LB":"上盒，列数", 
+  "operationsOperation_switch":"传送带", 
+  "operationsOperation_LM":"上料ODG", 
+  "operationsOperation_laser":"激光，图案编号", 
+  "operationsOperation_package":"SCUT机器手", 
+  "operationsOperation_LC":"上盖机，列数", 
+  "operationsOperation_UB":"下盒机", 
+  "operationsOperation_pick2CNC":"Denso机器手", 
+  "operationsOperation_machine":"CNC，雕刻图案", 
+  "operationsOperation_pick2pallet":"Denso机器手" 
+}
