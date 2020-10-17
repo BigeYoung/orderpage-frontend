@@ -35,7 +35,7 @@
     <v-card-actions>
       <span class="v-card__text grey--text">{{ orderTime }}下单</span>
       <v-spacer />
-      <v-btn color="primary" text> 查看详细加工状态 </v-btn>
+      <v-btn color="primary" text :to="'/product/'+product.guid"> 查看详细加工状态 </v-btn>
     </v-card-actions>
   </v-card>
 </template>

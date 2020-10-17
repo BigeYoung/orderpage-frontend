@@ -9,7 +9,7 @@
           :coverColor="values.cover_color"
           :boxColor="values.box_color"
           :productName="values.product_name"
-          :ratio="Math.min(windowSize.x, windowSize.y) / 500"
+          :ratio="Math.min(windowSize.x, windowSize.y) / 400"
       />
       </v-card>
     </v-col>
