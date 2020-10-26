@@ -4,7 +4,6 @@
       <v-row v-if="!products">
         <v-col cols="12" md="4" v-for="i in count['process']" :key="i">
           <v-skeleton-loader
-            v-bind="attrs"
             type="card, article, actions"
           ></v-skeleton-loader>
         </v-col>

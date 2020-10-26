@@ -5,12 +5,12 @@
         flat
         class="ma-3 pt-8 d-flex flex-column justify-center align-center"
       >
-      <ProductSVG
+        <ProductSVG
           :coverColor="values.cover_color"
           :boxColor="values.box_color"
           :productName="values.product_name"
           :ratio="Math.min(windowSize.x, windowSize.y) / 400"
-      />
+        />
       </v-card>
     </v-col>
     <v-col cols="12" md="6">
@@ -57,11 +57,11 @@ export default {
     params: [
       {
         title: "box_color",
-        options: ["Red", "Blue", "Green", "Magenta"],
+        options: ["Crimson", "Orchid", "IndianRed", "Turquoise", "Red", "Pink"],
       },
       {
         title: "cover_color",
-        options: ["Red", "Blue", "Green", "Magenta", "Cyan"],
+        options: ["Crimson", "Orchid", "IndianRed", "Turquoise", "Red", "Pink"],
       },
       {
         title: "product_name",
@@ -100,7 +100,17 @@ export default {
       axios({
         method: "post",
         url: "/api/order",
-        data: { values: this.values },
+        data: {
+          values: this.values,
+          box_idx:
+            this.params
+              .find((x) => x.title === "box_color")
+              .options.indexOf(this.values.box_color) + 1,
+          cover_idx:
+            this.params
+              .find((x) => x.title === "cover_color")
+              .options.indexOf(this.values.cover_color) + 1,
+        },
       })
         .then(() => {
           this.$store.dispatch("count/get");

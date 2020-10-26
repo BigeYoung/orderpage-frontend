@@ -48,11 +48,11 @@ export default {
     },
     darkColor() {
       if (!this.basicColor) return "#1111";
-      return Color(this.basicColor.toLowerCase()).darken(0.5);
+      return Color(this.basicColor.toLowerCase()).darken(0.3);
     },
     deepDarkColor() {
       if (!this.basicColor) return "#1111";
-      return Color(this.basicColor.toLowerCase()).darken(0.7);
+      return Color(this.basicColor.toLowerCase()).darken(0.5);
     },
     lightColor() {
       if (!this.basicColor) return "#0001";

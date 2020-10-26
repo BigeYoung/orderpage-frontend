@@ -115,11 +115,11 @@ export default {
     },
     Darken(c) {
       if (!c) return "#1111";
-      return Color(c.toLowerCase()).darken(0.5);
+      return Color(c.toLowerCase()).darken(0.3);
     },
     DeepDarken(c) {
       if (!c) return "#1111";
-      return Color(c.toLowerCase()).darken(0.7);
+      return Color(c.toLowerCase()).darken(0.5);
     },
     Lighten() {
       if (!this.basicColor) return "#0001";

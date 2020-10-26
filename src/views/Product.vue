@@ -12,7 +12,7 @@
       <template v-slot:img>
         <div class="d-flex justify-end">
           <ProductSVG
-            ratio="2.5"
+            :ratio="2.5"
             :box-color="box_color"
             :cover-color="cover_color"
             :product-name="product.name"
@@ -61,9 +61,9 @@
             v-for="o in product.operations"
             :key="o.index"
           >
-            <v-row class="grey--text">
+            <v-row :class="o.status === 'done' || 'grey--text'">
               <v-col cols="3" lg="1" class="pt-0">
-                <strong>等待</strong>
+                <strong>{{o.status === 'done' ? $moment(o.end_time).format("HH:mm:ss") : "等待"}}</strong>
               </v-col>
               <v-col class="pt-0">
                 <strong>{{ $t(o.name) }}</strong>
