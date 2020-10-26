@@ -19,7 +19,7 @@
       </v-chip>
     </v-card-text>
 
-    <v-card-text>
+    <v-card-text v-if="product.status!=='error'">
       <div>
         步骤{{ operations_done }}/{{ operations_total }}：{{ $t(next_step) }}
       </div>
@@ -31,11 +31,24 @@
         rounded
       ></v-progress-linear>
     </v-card-text>
+    <v-card-text v-else>
+      <div class="red--text">
+        错误：{{product.message}}
+      </div>
+      <v-progress-linear
+        color="error"
+        height="10"
+        :value="(operations_done / operations_total) * 100"
+        striped
+        rounded
+      ></v-progress-linear>
+    </v-card-text>
 
     <v-card-actions>
       <span class="v-card__text grey--text">{{ orderTime }}下单</span>
       <v-spacer />
-      <v-btn color="primary" text :to="'/product/'+product.guid"> 查看详细加工状态 </v-btn>
+      <v-btn v-if="product.status!=='error'" color="primary" text :to="'/product/'+product.guid"> 查看详细加工状态 </v-btn>
+      <v-btn v-else color="error" text disabled> 重试 </v-btn>
     </v-card-actions>
   </v-card>
 </template>
