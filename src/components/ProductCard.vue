@@ -10,6 +10,20 @@
     </div>
 
     <v-card-title>{{ $t(product.name) }}</v-card-title>
+    <v-card-subtitle v-if="!pallet" class="warning--text">
+      <v-icon small color="warning">mdi-alert-circle</v-icon>
+      托盘 {{product.pallet_guid}} 未注册。
+    </v-card-subtitle>
+    <v-card-subtitle v-else-if="pallet.ProductID!==product.guid" class="warning--text">
+      <v-icon small color="warning">mdi-alert-circle</v-icon>
+      托盘 {{product.pallet_guid}} 被占用。
+    </v-card-subtitle>
+    <v-card-subtitle v-else>
+      <v-icon small>{{
+        pallet.PortValid ? "mdi-link-variant" : "mdi-link-variant-off"
+      }}</v-icon
+      >{{ pallet.Address + ":" + pallet.ServicePort }}</v-card-subtitle
+    >
 
     <v-card-text>
       <v-chip v-for="f in product.features" :key="f.id" class="mr-1 mb-1"
@@ -19,7 +33,7 @@
       </v-chip>
     </v-card-text>
 
-    <v-card-text v-if="product.status!=='error'">
+    <v-card-text v-if="product.status !== 'error'">
       <div>
         步骤{{ operations_done }}/{{ operations_total }}：{{ $t(next_step) }}
       </div>
@@ -32,9 +46,7 @@
       ></v-progress-linear>
     </v-card-text>
     <v-card-text v-else>
-      <div class="red--text">
-        错误：{{product.message}}
-      </div>
+      <div class="red--text">错误：{{ product.message }}</div>
       <v-progress-linear
         color="error"
         height="10"
@@ -47,7 +59,14 @@
     <v-card-actions>
       <span class="v-card__text grey--text">{{ orderTime }}下单</span>
       <v-spacer />
-      <v-btn v-if="product.status!=='error'" color="primary" text :to="'/product/'+product.guid"> 查看详细加工状态 </v-btn>
+      <v-btn
+        v-if="product.status !== 'error'"
+        color="primary"
+        text
+        :to="'/product/' + product.guid"
+      >
+        查看详细加工状态
+      </v-btn>
       <v-btn v-else color="error" text disabled> 重试 </v-btn>
     </v-card-actions>
   </v-card>
@@ -56,6 +75,7 @@
 <script>
 import moment from "moment";
 import ProductSVG from "@/components/ProductSVG.vue";
+import axios from "axios";
 
 export default {
   data: () => ({
@@ -63,10 +83,14 @@ export default {
       x: 0,
       y: 0,
     },
+    pallet: null,
   }),
 
   mounted() {
     this.onResize();
+    axios
+      .get("/api/products/pallet/" + this.product.pallet_guid)
+      .then((response) => (this.pallet = response.data));
   },
 
   methods: {

@@ -40,39 +40,82 @@
       <v-spacer />
     </v-app-bar>
     <v-sheet id="scrolling-view">
-      <v-main>
-        <v-timeline align-top dense>
-          <v-timeline-item color="green" small>
-            <v-row>
-              <v-col cols="3" lg="1" class="pt-0">
-                <strong>{{
-                  $moment(product.order.created_at).format("HH:mm:ss")
-                }}</strong>
-              </v-col>
-              <v-col class="pt-0">
-                <strong>用户下单</strong>
-                <div>订单编号：{{ product.order.id }}</div>
-              </v-col>
-            </v-row>
-          </v-timeline-item>
-          <v-timeline-item
-            :color="o.status === 'done' ? 'green' : 'grey'"
-            small
-            v-for="o in product.operations"
-            :key="o.index"
-          >
-            <v-row :class="o.status === 'done' || 'grey--text'">
-              <v-col cols="3" lg="1" class="pt-0">
-                <strong>{{o.status === 'done' ? $moment(o.end_time).format("HH:mm:ss") : "等待"}}</strong>
-              </v-col>
-              <v-col class="pt-0">
-                <strong>{{ $t(o.name) }}</strong>
-                <div>{{ o.param }}</div>
-              </v-col>
-            </v-row>
-          </v-timeline-item>
-        </v-timeline>
-      </v-main>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-timeline align-top dense>
+            <v-timeline-item color="green" small>
+              <v-row>
+                <v-col cols="3" class="pt-0">
+                  <strong>{{
+                    $moment(product.order.created_at).format("HH:mm:ss")
+                  }}</strong>
+                </v-col>
+                <v-col class="pt-0">
+                  <strong>用户下单</strong>
+                  <div>订单编号：{{ product.order.id }}</div>
+                </v-col>
+              </v-row>
+            </v-timeline-item>
+            <v-timeline-item
+              :color="o.status === 'done' ? 'green' : 'grey'"
+              small
+              v-for="o in product.operations"
+              :key="o.index"
+            >
+              <v-row :class="o.status === 'done' || 'grey--text'">
+                <v-col cols="3" class="pt-0">
+                  <strong>{{
+                    o.status === "done"
+                      ? $moment(o.end_time).format("HH:mm:ss")
+                      : "等待"
+                  }}</strong>
+                </v-col>
+                <v-col class="pt-0">
+                  <strong>{{ $t(o.name) }}</strong>
+                  <div>{{ o.param }}</div>
+                </v-col>
+              </v-row>
+            </v-timeline-item>
+          </v-timeline>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-card class="ma-6">
+            <v-list-item two-line v-if="!pallet_loading">
+              <v-list-item-avatar>
+                <v-icon v-if="!pallet" large color="error"
+                  >mdi-alert-circle</v-icon
+                >
+                <v-icon
+                  v-else-if="pallet.ProductID !== $route.params.product_guid"
+                  large
+                  color="error"
+                  >mdi-alert-circle</v-icon
+                >
+                <v-icon v-else-if="!pallet.PortValid" large color="warning"
+                  >mdi-link-variant-off</v-icon
+                >
+                <v-icon v-else large color="success">mdi-link-variant</v-icon>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ product.pallet_guid }}
+                </v-list-item-title>
+                <v-list-item-subtitle v-if="!pallet">
+                  该托盘未注册。
+                </v-list-item-subtitle>
+                <v-list-item-subtitle
+                  v-else-if="pallet.ProductID !== $route.params.product_guid"
+                >
+                  该托盘被其他产品占用。
+                </v-list-item-subtitle>
+                <v-list-item-subtitle v-else>
+                  {{ pallet.Address }}:{{ pallet.ServicePort }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-sheet>
   </div>
 </template>
@@ -87,10 +130,15 @@ export default {
   },
   data: () => ({
     product: null,
+    pallet: null,
+    pallet_loading: true,
   }),
   mounted() {
     this.update();
-    this.timer = setInterval(this.update, 50000);
+    this.timer = setInterval(this.update, 5000);
+  },
+  destroyed() {
+    clearInterval(this.timer);
   },
   methods: {
     update() {
@@ -98,6 +146,10 @@ export default {
         .get("/api/products/info/" + this.$route.params.product_guid)
         .then((response) => {
           this.product = response.data.products;
+          axios
+            .get("/api/products/pallet/" + this.product.pallet_guid)
+            .then((response) => (this.pallet = response.data))
+            .finally(() => (this.pallet_loading = false));
         });
     },
   },
