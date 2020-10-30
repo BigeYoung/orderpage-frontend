@@ -10,15 +10,25 @@
     </div>
 
     <v-card-title>{{ $t(product.name) }}</v-card-title>
-    <v-card-subtitle v-if="!pallet" class="warning--text">
+    <v-card-subtitle v-if="pallet_error" class="warning--text">
       <v-icon small color="warning">mdi-alert-circle</v-icon>
-      托盘 {{product.pallet_guid}} 未注册。
+      托盘 {{ product.pallet_guid }} 查询出错：可能未注册。
     </v-card-subtitle>
-    <v-card-subtitle v-else-if="pallet.ProductID!==product.guid" class="warning--text">
+    <v-card-subtitle v-else-if="!pallet">
+      <v-icon small>mdi-sync mdi-spin</v-icon>
+      正在请求托盘 {{ product.pallet_guid }} 的信息...
+    </v-card-subtitle>
+    <v-card-subtitle
+      v-else-if="pallet.ProductID !== product.guid"
+      class="warning--text"
+    >
       <v-icon small color="warning">mdi-alert-circle</v-icon>
-      托盘 {{pallet.Node}} 被占用。
+      托盘 {{ pallet.Node }} 被占用。
     </v-card-subtitle>
-    <v-card-subtitle v-else :class="pallet.PortValid ? 'green--text' : 'gray--text'">
+    <v-card-subtitle
+      v-else
+      :class="pallet.PortValid ? 'green--text' : 'gray--text'"
+    >
       <v-icon small :color="pallet.PortValid ? 'green' : 'gray'">{{
         pallet.PortValid ? "mdi-link-variant" : "mdi-link-variant-off"
       }}</v-icon
@@ -84,13 +94,21 @@ export default {
       y: 0,
     },
     pallet: null,
+    pallet_error: false,
   }),
 
   mounted() {
     this.onResize();
     axios
       .get("/api/products/pallet/" + this.product.pallet_guid)
-      .then((response) => (this.pallet = response.data));
+      .then((response) => {
+        this.pallet = response.data;
+        this.pallet_error = false;
+      })
+      .catch((error) => {
+        window.console.log(error);
+        this.pallet_error = true;
+      });
   },
 
   methods: {

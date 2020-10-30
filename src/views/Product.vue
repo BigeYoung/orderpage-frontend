@@ -98,7 +98,7 @@
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title>
-                  {{ product.pallet_guid }}
+                  {{ pallet.Node }}
                 </v-list-item-title>
                 <v-list-item-subtitle v-if="!pallet">
                   该托盘未注册。
