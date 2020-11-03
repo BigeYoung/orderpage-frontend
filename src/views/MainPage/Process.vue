@@ -37,7 +37,7 @@ export default {
   },
   mounted() {
     this.update();
-    this.timer = setInterval(this.update, 5500);
+    this.timer = setInterval(this.update, 800);
   },
   destroyed() {
     clearInterval(this.timer);
