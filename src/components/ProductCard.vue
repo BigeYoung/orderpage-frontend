@@ -10,13 +10,23 @@
     </div>
 
     <v-card-title>{{ $t(product.name) }}</v-card-title>
-    <v-card-subtitle v-if="pallet_error" class="warning--text">
+    <v-card-subtitle v-if="$route.path == '/main/done'">
+      <v-icon small>mdi-done</v-icon>
+      加工完成。
+    </v-card-subtitle>
+    <v-card-subtitle v-else-if="pallet_error" class="warning--text">
       <v-icon small color="warning">mdi-alert-circle</v-icon>
       托盘 {{ product.pallet_guid }} 查询出错：可能未注册。
     </v-card-subtitle>
     <v-card-subtitle v-else-if="!pallet">
       <v-icon small>mdi-sync mdi-spin</v-icon>
       正在请求托盘 {{ product.pallet_guid }} 的信息...
+    </v-card-subtitle>
+    <v-card-subtitle
+      v-else-if="pallet.ProductID == 'empty' && $route.path == '/main/process'"
+    >
+      <v-icon small>mdi-download</v-icon>
+      托盘 {{ pallet.Node }} 的 OPC UA Server 正在生成。
     </v-card-subtitle>
     <v-card-subtitle
       v-else-if="pallet.ProductID !== product.guid"
@@ -99,21 +109,27 @@ export default {
 
   mounted() {
     this.onResize();
-    axios
-      .get("/api/products/pallet/" + this.product.pallet_guid)
-      .then((response) => {
-        this.pallet = response.data;
-        this.pallet_error = false;
-      })
-      .catch((error) => {
-        window.console.log(error);
-        this.pallet_error = true;
-      });
+    this.updatePallet();
+    this.timer = setInterval(this.updatePallet, 1000);
   },
-
+  destroyed() {
+    clearInterval(this.timer);
+  },
   methods: {
     onResize() {
       this.windowSize = { x: window.innerWidth, y: window.innerHeight };
+    },
+    updatePallet() {
+      axios
+        .get("/api/products/pallet/" + this.product.pallet_guid)
+        .then((response) => {
+          this.pallet = response.data;
+          this.pallet_error = false;
+        })
+        .catch((error) => {
+          window.console.log(error);
+          this.pallet_error = true;
+        });
     },
   },
   components: {
