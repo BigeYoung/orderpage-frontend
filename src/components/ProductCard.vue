@@ -120,6 +120,10 @@ export default {
       this.windowSize = { x: window.innerWidth, y: window.innerHeight };
     },
     updatePallet() {
+      if (!this.product.pallet_guid) {
+          this.pallet_error = true;
+          return;
+      }
       axios
         .get("/api/products/pallet/" + this.product.pallet_guid)
         .then((response) => {
